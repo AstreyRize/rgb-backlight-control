@@ -15,7 +15,7 @@ void handleIndex() {
   int packSize = 500;
 
   server.setContentLength(contentSize);
-	server.send ( 200, "text/html", index.substring(transferred, transferred + packSize));
+	server.send(200, "text/html", index.substring(transferred, transferred + packSize));
 
   transferred = transferred + packSize < contentSize
     ? transferred + packSize
@@ -27,7 +27,7 @@ void handleIndex() {
     transferred = transferred + packSize < contentSize
       ? transferred + packSize
       : contentSize;
-  }while(transferred < index.length());
+  }while(transferred < contentSize);
 }
 
 void handleColor(){
