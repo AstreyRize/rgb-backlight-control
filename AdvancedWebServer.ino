@@ -2,9 +2,18 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <EEPROM.h>
 
 const char *ssid = "Astrey";
 const char *password = "474643756hammerman";
+
+int redColorAddress = 0;
+int greenColorAddress = 1;
+int blueColorAddress = 2;
+
+byte red;
+byte green;
+byte blue; 
 
 ESP8266WebServer server ( 80 );
 
@@ -30,10 +39,10 @@ void handleIndex() {
   }while(transferred < contentSize);
 }
 
-void handleColor(){
-  int red = server.arg("red").toInt();
-  int green = server.arg("green").toInt();
-  int blue = server.arg("blue").toInt();
+void setColor(){
+  red = server.arg("red").toInt();
+  green = server.arg("green").toInt();
+  blue = server.arg("blue").toInt();
 
   if(red >= 0 || red <= 255){
     analogWrite(0, red * 4);
@@ -47,7 +56,17 @@ void handleColor(){
     analogWrite(2, blue * 4);
   }
 
+  EEPROM.write(redColorAddress, red);
+  EEPROM.write(greenColorAddress, green);
+  EEPROM.write(blueColorAddress, blue);
+  EEPROM.commit();
+
   server.send(200, "text/plain", "");
+}
+
+void getColor(){
+  String response = String("{ red: ") + red + ", green: " + green + ", blue: " + blue + "}";
+  server.send(200, "application/json", response);
 }
 
 void handleNotFound() {
@@ -67,14 +86,36 @@ void handleNotFound() {
 	server.send ( 404, "text/plain", message );
 }
 
+void setupColor(){
+  red = EEPROM.read(redColorAddress);
+  green = EEPROM.read(greenColorAddress);
+  blue = EEPROM.read(blueColorAddress);
+
+  if(red >= 0 || red <= 255){
+    analogWrite(0, red * 4);
+  }
+
+  if(green >= 0 || green <= 255){
+    analogWrite(1, green * 4);
+  }
+
+  if(blue >= 0 || blue <= 255){
+    analogWrite(2, blue * 4);
+  }
+}
+
 void setup ( void ) {
+  EEPROM.begin(512);
+    
   //GPIO 1 (TX) swap the pin to a GPIO.
   pinMode(1, FUNCTION_3);
 
   pinMode(0, OUTPUT);
   pinMode(1, OUTPUT);
   pinMode(2, OUTPUT);
-  
+
+  setupColor();
+
 	WiFi.begin ( ssid, password );
 	Serial.println ( "" );
 
@@ -83,7 +124,8 @@ void setup ( void ) {
 	}
 
 	server.on ( "/", handleIndex);
-	server.on ( "/color", handleColor);
+	server.on ( "/setColor", setColor);
+  server.on ( "/getColor", getColor);
 	server.onNotFound (handleNotFound);
 	server.begin();
 }
