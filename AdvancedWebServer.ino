@@ -3,6 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
+#include <Ticker.h>
 
 const char *ssid = "Astrey";
 const char *password = "474643756hammerman";
@@ -10,11 +11,14 @@ const char *password = "474643756hammerman";
 int redColorAddress = 0;
 int greenColorAddress = 1;
 int blueColorAddress = 2;
+int effectSpeedAddress = 3;
 
 byte red;
 byte green;
-byte blue; 
+byte blue;
+float effectSpeed;
 
+Ticker effectTrigger;
 ESP8266WebServer server ( 80 );
 
 void handleIndex() {
@@ -69,6 +73,100 @@ void getColor(){
   server.send(200, "application/json", response);
 }
 
+void setEffectSpeed(){
+  effectSpeed = server.arg("effectSpeed").toFloat();
+
+  if(effectSpeed <= 0){
+    effectSpeed = 1;
+  }
+  else if(effectSpeed > 255){
+    effectSpeed = 255;
+  }
+
+  EEPROM.write(effectSpeedAddress, effectSpeed);
+  EEPROM.commit();
+  
+  server.send(200, "text/plain", "");
+}
+
+void getEffectSpeed(){
+  String response = String("{\"effectSpeed\": ") + effectSpeed + "}";
+  server.send(200, "application/json", response);
+}
+
+void setEffect(){
+  effectTrigger.detach();
+  int effectNumder = server.arg("effect").toInt();
+
+  switch(effectNumder){
+    //gradient
+    case 0:
+      red = 255;
+      green = 0;
+      blue = 0;
+      effectTrigger.attach(effectSpeed, gradient);
+      break;
+    default:
+        server.send(404, "text/plain", "Effect not found");
+      break;  
+  }
+  
+  server.send(200, "text/plain", "");
+}
+
+void getEffect(){
+  // TODO: implement
+  //String response = String("{\"effectSpeed\": ") + effectSpeed + "}";
+  server.send(200, "application/json", "{\"effect\": 0}");
+}
+
+void gradient(){
+  // Растет зеленый
+  if(red == 255 && green < 255 && blue == 0){
+    green++;
+  }
+  else if(red > 0 && green == 255  && blue == 0){
+    red--;
+  }
+  else if(red == 0 && green == 255  && blue == 0){
+    blue = 1;
+  }
+
+  // Растет синий
+  else if(green == 255 && blue < 255 && red == 0){
+    blue++;
+  }
+  else if(green > 0 && blue == 255 && red == 0){
+    green--;
+  }
+  else if(green == 0 && blue == 255 && red == 0){
+    red = 1;
+  } 
+
+  // Растет красный
+  else if(blue == 255 && red < 255 && green == 0){
+    red++;
+  }
+  else if(blue > 0 && red == 255 && green == 0){
+    blue--;
+  }
+  else if(blue == 0 && red == 255 && green == 0){
+    green = 1;
+  }
+
+  if(red >= 0 || red <= 255){
+    analogWrite(0, red * 4);
+  }
+
+  if(green >= 0 || green <= 255){
+    analogWrite(1, green * 4);
+  }
+
+  if(blue >= 0 || blue <= 255){
+    analogWrite(2, blue * 4);
+  }
+}
+
 void handleNotFound() {
 	String message = "File Not Found\n\n";
 	message += "URI: ";
@@ -90,6 +188,7 @@ void setupColor(){
   red = EEPROM.read(redColorAddress);
   green = EEPROM.read(greenColorAddress);
   blue = EEPROM.read(blueColorAddress);
+  effectSpeed = EEPROM.read(effectSpeedAddress);
 
   if(red >= 0 || red <= 255){
     analogWrite(0, red * 4);
@@ -126,6 +225,10 @@ void setup ( void ) {
 	server.on ( "/", handleIndex);
 	server.on ( "/setColor", setColor);
   server.on ( "/getColor", getColor);
+  server.on ( "/setEffect", setEffect);
+  server.on ( "/getEffect", getEffect);
+  server.on ( "/setEffectSpeed", setEffectSpeed);
+  server.on ( "/getEffectSpeed", getEffectSpeed);
 	server.onNotFound (handleNotFound);
 	server.begin();
 }
