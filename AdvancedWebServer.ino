@@ -12,14 +12,24 @@ int redColorAddress = 0;
 int greenColorAddress = 1;
 int blueColorAddress = 2;
 int effectSpeedAddress = 3;
+int effectAddress = 8;
 
-byte red;
-byte green;
-byte blue;
-float effectSpeed;
+byte red = 255;
+byte green = 255;
+byte blue = 255;
+float effectSpeed = 0.01;
+byte effect = 0;
 
 Ticker effectTrigger;
 ESP8266WebServer server ( 80 );
+
+
+//////////////////////////////////////////////////
+//                                              //
+//                 Controllers                  //
+//                                              //
+//////////////////////////////////////////////////
+
 
 void handleIndex() {
   String index = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'/><style>body{background-color:darkslategrey}input#red[type=range]::-moz-range-track{background:linear-gradient(to right,#fff,#f00)}input#green[type=range]::-moz-range-track{background:linear-gradient(to right,#fff,#0f0)}input#blue[type=range]::-moz-range-track{background:linear-gradient(to right,#fff,#00f)}input#red[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,#fff,#f00)}input#green[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,#fff,#0f0)}input#blue[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,#fff,#00f)}input[type=range]{-webkit-appearance:none;margin:18px 0;width:100%;display:block;margin-right:auto;margin-left:auto}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:8.4px;cursor:pointer;animate:.2s;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border-radius:1.3px;border:.2px solid #010101}input[type=range]::-webkit-slider-thumb{box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border:1px solid #000;height:36px;width:16px;border-radius:3px;background:#fff;cursor:pointer;-webkit-appearance:none;margin-top:-14px}/*!*background: #367ebd;*!*/input[type=range]::-moz-range-track{width:100%;height:8.4px;cursor:pointer;animate:.2s;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border-radius:1.3px;border:.2px solid #010101}input[type=range]::-moz-range-thumb{box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border:1px solid #000;height:36px;width:16px;border-radius:3px;background:#fff;cursor:pointer}input[type=range]::-ms-track{width:100%;height:8.4px;cursor:pointer;animate:.2s;background:transparent;border-color:transparent;border-width:16px 0;color:transparent}input[type=range]::-ms-fill-lower{border:.2px solid #010101;border-radius:2.6px;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d}input[type=range]::-ms-fill-upper{border:.2px solid #010101;border-radius:2.6px;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d}input[type=range]::-ms-thumb{box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border:1px solid #000;height:36px;width:16px;border-radius:3px;cursor:pointer}/*!*background: #367ebd;*!*/p{color:black;text-align:center}</style></head><body><div><input id='red' type='range' onchange='changeColor()' min='0' max='255'/><br/><input id='green' type='range' onchange='changeColor()' min='0' max='255'/><br/><input id='blue' type='range' onchange='changeColor()' min='0' max='255'/></div></body><script>function changeColor(){console.log('changeColor >>');var e=document.getElementById('red'),n=document.getElementById('green'),t=document.getElementById('blue');if(e&&n&&t){var o='rgb('+parseInt(e.value)+', '+parseInt(n.value)+', '+parseInt(t.value)+')';console.log(o),document.body.style.backgroundColor=o,console.log('color?red='+e.value+'&green='+n.value+'&blue='+t.value);var l=new XMLHttpRequest;l.open('GET','setColor?red='+e.value+'&green='+n.value+'&blue='+t.value,!0),l.send()}}function getColor(){var l=new XMLHttpRequest;l.onreadystatechange=function(){if(4===l.readyState&&200===l.status){var e=JSON.parse(l.responseText);if(!e)return;var n=document.getElementById('red'),t=document.getElementById('green'),o=document.getElementById('blue');if(!n||!t||!o)return;n.value=e.red,t.value=e.green,o.value=e.blue}},l.open('GET','getColor',!0),l.send()}getColor(),changeColor();</script></html>";
@@ -75,50 +85,64 @@ void getColor(){
 
 void setEffectSpeed(){
   effectSpeed = server.arg("effectSpeed").toFloat();
+  implementEffect();
 
-  if(effectSpeed <= 0){
-    effectSpeed = 1;
-  }
-  else if(effectSpeed > 255){
-    effectSpeed = 255;
-  }
-
-  EEPROM.write(effectSpeedAddress, effectSpeed);
+  EEPROM.put(effectSpeedAddress, effectSpeed);
   EEPROM.commit();
   
-  server.send(200, "text/plain", "");
+  String response = String("{\"effectSpeed\": ") + String(effectSpeed, 5) + "}";
+  server.send(200, "application/json", response);
 }
 
 void getEffectSpeed(){
-  String response = String("{\"effectSpeed\": ") + effectSpeed + "}";
+  String response = String("{\"effectSpeed\": ") + String(effectSpeed, 5) + "}";
   server.send(200, "application/json", response);
 }
 
 void setEffect(){
-  effectTrigger.detach();
-  int effectNumder = server.arg("effect").toInt();
+  effect = server.arg("effect").toInt();
+  implementEffect();
+  
+  String response = String("{\"effect\": ") + effect + "}";
+  server.send(200, "application/json", response);
+}
 
-  switch(effectNumder){
-    //gradient
+void implementEffect(){
+    switch(effect){
+    //no effect
     case 0:
+      effectTrigger.detach();
+      break;
+    //gradient
+    case 1:
       red = 255;
       green = 0;
       blue = 0;
+      
+      effectTrigger.detach();
       effectTrigger.attach(effectSpeed, gradient);
+
+      EEPROM.write(effectAddress, effect);
+      EEPROM.commit();
       break;
     default:
         server.send(404, "text/plain", "Effect not found");
       break;  
   }
-  
-  server.send(200, "text/plain", "");
 }
 
 void getEffect(){
-  // TODO: implement
-  //String response = String("{\"effectSpeed\": ") + effectSpeed + "}";
-  server.send(200, "application/json", "{\"effect\": 0}");
+  String response = String("{\"effect\": ") + effect + "}";
+  server.send(200, "application/json", response);
 }
+
+
+//////////////////////////////////////////////////
+//                                              //
+//                  Effects                     //
+//                                              //
+//////////////////////////////////////////////////
+
 
 void gradient(){
   // Растет зеленый
@@ -184,11 +208,18 @@ void handleNotFound() {
 	server.send ( 404, "text/plain", message );
 }
 
+
+//////////////////////////////////////////////////
+//                                              //
+//                  Setup                       //
+//                                              //
+//////////////////////////////////////////////////
+
+
 void setupColor(){
   red = EEPROM.read(redColorAddress);
   green = EEPROM.read(greenColorAddress);
   blue = EEPROM.read(blueColorAddress);
-  effectSpeed = EEPROM.read(effectSpeedAddress);
 
   if(red >= 0 || red <= 255){
     analogWrite(0, red * 4);
@@ -203,6 +234,13 @@ void setupColor(){
   }
 }
 
+void setupEffect(){
+  EEPROM.get(effectSpeedAddress, effectSpeed);
+  effect = EEPROM.read(effectAddress);
+
+  implementEffect();
+}
+
 void setup ( void ) {
   EEPROM.begin(512);
     
@@ -214,6 +252,7 @@ void setup ( void ) {
   pinMode(2, OUTPUT);
 
   setupColor();
+  setupEffect();
 
 	WiFi.begin ( ssid, password );
 	Serial.println ( "" );
