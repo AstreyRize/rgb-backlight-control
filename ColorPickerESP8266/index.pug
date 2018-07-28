@@ -1,0 +1,21 @@
+html
+    head
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        style
+            include other/css/style.min.css
+    body
+        div
+            input(id="red" type="range" onchange="changeColor()" min="0" max="255")
+            br
+            input(id="green" type="range" onchange="changeColor()" min="0" max="255")
+            br
+            input(id="blue" type="range" onchange="changeColor()" min="0" max="255")
+            br
+            br
+            input(id="speed" type="range" onchange="changeSpeed()" min="1" max="1000")
+            br
+            button(id="noEffect" onclick="changeEffect(0)") No effect
+            button(id="gradient" onclick="changeEffect(1)") Gradient
+            button(id="upScale" onclick="changeEffect(2)") Breath
+    script
+        include other/js/app.min.js
