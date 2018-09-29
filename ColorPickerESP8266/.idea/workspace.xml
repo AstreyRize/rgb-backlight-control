@@ -59,17 +59,26 @@
       <file leaf-file-name="signIn.pug" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/signIn.pug">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="54" selection-start-line="7" selection-start-column="54" selection-end-line="7" selection-end-column="54" />
+            <state>
+              <caret column="4" lean-forward="true" selection-start-column="4" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="signIn.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="signIn.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/signIn.html">
           <provider selected="true" editor-type-id="text-editor">
             <state>
-              <caret column="29" selection-end-column="955" />
+              <caret column="1114" selection-end-column="1114" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/other/js/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="918">
+              <caret line="54" selection-start-line="54" selection-end-line="58" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -83,22 +92,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="signIn.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/other/js/signIn.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="100" lean-forward="true" selection-start-line="9" selection-start-column="100" selection-end-line="9" selection-end-column="100" />
-            </state>
-          </provider>
+      <file leaf-file-name="style.min.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/other/css/style.min.css">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/other/js/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="54" selection-start-line="54" selection-end-line="58" selection-end-column="5" />
-            </state>
-          </provider>
+      <file leaf-file-name="style.min.min.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/other/css/style.min.min.css">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file leaf-file-name="style.css" pinned="false" current-in-tab="false">
@@ -106,6 +107,15 @@
           <provider selected="true" editor-type-id="text-editor">
             <state>
               <caret selection-end-line="2" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="signIn.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/other/js/signIn.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="238">
+              <caret line="14" column="53" selection-start-line="14" selection-start-column="53" selection-end-line="14" selection-end-column="53" />
             </state>
           </provider>
         </entry>
@@ -132,10 +142,11 @@
         <option value="$PROJECT_DIR$/other/js/app.js" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/index.pug" />
-        <option value="$PROJECT_DIR$/other/js/signIn.js" />
         <option value="$PROJECT_DIR$/other/css/TextBoxStyle.css" />
         <option value="$PROJECT_DIR$/other/css/style.css" />
         <option value="$PROJECT_DIR$/other/css/signInStyle.css" />
+        <option value="$PROJECT_DIR$/signIn.html" />
+        <option value="$PROJECT_DIR$/other/js/signIn.js" />
         <option value="$PROJECT_DIR$/signIn.pug" />
       </list>
     </option>
@@ -152,7 +163,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="width" value="959" />
     <option name="height" value="1050" />
   </component>
@@ -207,11 +218,6 @@
               <item name="js" type="462c0819:PsiDirectoryNode" />
               <item name="signIn.js" type="620a8d5e:NestingTreeNode" />
             </path>
-            <path>
-              <item name="ColorPickerESP8266" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ColorPickerESP8266" type="462c0819:PsiDirectoryNode" />
-              <item name="signIn.pug" type="620a8d5e:NestingTreeNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -256,16 +262,15 @@
       <workItem from="1532773683354" duration="4155000" />
       <workItem from="1532794768608" duration="5916000" />
       <workItem from="1532815436908" duration="26000" />
-      <workItem from="1538219925151" duration="3923000" />
+      <workItem from="1538219925151" duration="5350000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22456000" />
+    <option name="totallyTimeSpent" value="23883000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17492098" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -475,24 +480,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/signIn.pug">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="4" lean-forward="true" selection-start-column="4" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/signIn.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="1114" selection-end-column="1114" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/other/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret selection-end-line="2" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/other/js/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="54" selection-start-line="54" selection-end-line="58" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/other/js/signIn.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="100" lean-forward="true" selection-start-line="9" selection-start-column="100" selection-end-line="9" selection-end-column="100" />
         </state>
       </provider>
     </entry>
@@ -503,17 +508,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/signIn.pug">
+    <entry file="file://$PROJECT_DIR$/other/css/style.min.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/other/css/style.min.min.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/other/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="54" selection-start-line="7" selection-start-column="54" selection-end-line="7" selection-end-column="54" />
+        <state relative-caret-position="918">
+          <caret line="54" selection-start-line="54" selection-end-line="58" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/signIn.html">
+    <entry file="file://$PROJECT_DIR$/other/js/signIn.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="29" selection-end-column="955" />
+        <state relative-caret-position="238">
+          <caret line="14" column="53" selection-start-line="14" selection-start-column="53" selection-end-line="14" selection-end-column="53" />
         </state>
       </provider>
     </entry>

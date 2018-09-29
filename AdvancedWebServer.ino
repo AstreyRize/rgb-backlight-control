@@ -35,24 +35,7 @@ ESP8266WebServer server ( 80 );
 
 void handleIndex() {
   String index = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'/><style>body{background-color:darkslategray}input#red[type=range]::-moz-range-track{background:linear-gradient(to right,#fff,#f00)}input#green[type=range]::-moz-range-track{background:linear-gradient(to right,#fff,#0f0)}input#blue[type=range]::-moz-range-track{background:linear-gradient(to right,#fff,#00f)}input#red[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,#fff,#f00)}input#green[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,#fff,#0f0)}input#blue[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,#fff,#00f)}input[type=range]{-webkit-appearance:none;margin:18px 0;width:100%;display:block;margin-right:auto;margin-left:auto}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:8.4px;cursor:pointer;animate:.2s;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border-radius:1.3px;border:.2px solid #010101}input[type=range]::-webkit-slider-thumb{box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border:1px solid #000;height:36px;width:16px;border-radius:3px;background:#fff;cursor:pointer;-webkit-appearance:none;margin-top:-14px}/*!*background: #367ebd;*!*/input[type=range]::-moz-range-track{width:100%;height:8.4px;cursor:pointer;animate:.2s;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border-radius:1.3px;border:.2px solid #010101}input[type=range]::-moz-range-thumb{box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border:1px solid #000;height:36px;width:16px;border-radius:3px;background:#fff;cursor:pointer}input[type=range]::-ms-track{width:100%;height:8.4px;cursor:pointer;animate:.2s;background:transparent;border-color:transparent;border-width:16px 0;color:transparent}input[type=range]::-ms-fill-lower{border:.2px solid #010101;border-radius:2.6px;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d}input[type=range]::-ms-fill-upper{border:.2px solid #010101;border-radius:2.6px;box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d}input[type=range]::-ms-thumb{box-shadow:1px 1px 1px #000,0 0 1px #0d0d0d;border:1px solid #000;height:36px;width:16px;border-radius:3px;cursor:pointer}button{background-color:#4caf50;border:0;color:white;padding:20px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;margin:4px 2px;cursor:pointer;border-radius:12px;width:100%;opacity:1}button:active{opacity:.5}</style></head><body><div><input id='red' type='range' onchange='changeColor()' min='0' max='255'/><br/><input id='green' type='range' onchange='changeColor()' min='0' max='255'/><br/><input id='blue' type='range' onchange='changeColor()' min='0' max='255'/><br/><br/><input id='speed' type='range' onchange='changeSpeed()' min='1' max='1000'/><br/><button id='noEffect' onclick='changeEffect(0)'>No effect</button><button id='gradient' onclick='changeEffect(1)'>Gradient</button><button id='upScale' onclick='changeEffect(2)'>Breath</button></div></body><script>function changeColor(){var e=document.getElementById('red'),t=document.getElementById('green'),n=document.getElementById('blue');if(e&&t&&n){var r=Array.from(document.getElementsByTagName('button')),a='rgb('+parseInt(e.value)+', '+parseInt(t.value)+', '+parseInt(n.value)+')';r.forEach(function(e){e.style.backgroundColor=a});var u=new XMLHttpRequest;u.open('GET','setColor?red='+e.value+'&green='+t.value+'&blue='+n.value,!0),u.send()}}function getColor(){var a=new XMLHttpRequest;a.onreadystatechange=function(){if(4===a.readyState&&200===a.status){var e=JSON.parse(a.responseText);if(!e)return;var t=document.getElementById('red'),n=document.getElementById('green'),r=document.getElementById('blue');if(!t||!n||!r)return;t.value=e.red,n.value=e.green,r.value=e.blue}},a.open('GET','getColor',!0),a.send()}function changeSpeed(){var e=document.getElementById('speed');if(e){var t=new XMLHttpRequest;t.open('GET','setEffectSpeed?effectSpeed='+e.value/1e3,!0),t.send()}}function getSpeed(){var n=new XMLHttpRequest;n.onreadystatechange=function(){if(4===n.readyState&&200===n.status){var e=JSON.parse(n.responseText);if(!e)return;var t=document.getElementById('speed');if(!t)return;t.value=1e3*e.effectSpeed}},n.open('GET','getEffectSpeed',!0),n.send()}function changeEffect(e){var t=new XMLHttpRequest;t.open('GET','/setEffect?effect='+e,!0),t.send()}getColor(),getSpeed();</script></html>";
-  int contentSize = index.length();
-  int transferred = 0;
-  int packSize = 500;
-
-  server.setContentLength(contentSize);
-	server.send(200, "text/html", index.substring(transferred, transferred + packSize));
-
-  transferred = transferred + packSize < contentSize
-    ? transferred + packSize
-    : contentSize;
-
-  do{
-    server.sendContent(index.substring(transferred, transferred + packSize));
-
-    transferred = transferred + packSize < contentSize
-      ? transferred + packSize
-      : contentSize;
-  }while(transferred < contentSize);
+  sendDataByPart(index);
 }
 
 void handleNotFound() {
@@ -164,25 +147,8 @@ void getEffect(){
 }
 
 void signIn(){
-  String index = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'/><style>body{background-color:darkslategray}input[type=text],[type=password],select{width:100%;padding:12px 20px;margin:8px 0;display:inline-block;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}button{background-color:#4caf50;border:0;color:white;padding:20px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;margin:4px 2px;cursor:pointer;border-radius:12px;width:100%;opacity:1}button:active{opacity:.5}</style></head><body><div><input id='login' type='text' maxlength='20'/><input id='password' type='password' maxlength='20'/><button id='signIn' onclick='signIn()'>Sign In</button></div></body><script>function signIn(){var e=document.getElementById('login'),n=document.getElementById('password');if(e&&n){var t=new XMLHttpRequest;t.open('GET','setWifiCredentials?login='+e.value+'&password='+n.value,!0),t.send()}}</script></html>";
-  int contentSize = index.length();
-  int transferred = 0;
-  int packSize = 500;
-
-  server.setContentLength(contentSize);
-  server.send(200, "text/html", index.substring(transferred, transferred + packSize));
-
-  transferred = transferred + packSize < contentSize
-    ? transferred + packSize
-    : contentSize;
-
-  do{
-    server.sendContent(index.substring(transferred, transferred + packSize));
-
-    transferred = transferred + packSize < contentSize
-      ? transferred + packSize
-      : contentSize;
-  }while(transferred < contentSize);
+  String index = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'/><style>body{background-color:darkslategray}input[type=text],[type=password],select{width:100%;padding:12px 20px;margin:8px 0;display:inline-block;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}button{background-color:#4caf50;border:0;color:white;padding:20px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;margin:4px 2px;cursor:pointer;border-radius:12px;width:100%;opacity:1}button:active{opacity:.5}</style></head><body><div><input id='login' type='text' maxlength='20' minlength='1' onkeyup='checkLetters(login)'/><input id='password' type='password' maxlength='20' minlength='1' onkeyup='checkLetters(password)'/><button id='signIn' onclick='signIn()'>Sign In</button></div></body><script>function signIn(){var e=document.getElementById('login'),n=document.getElementById('password');if(e&&n){var t=new XMLHttpRequest;t.open('GET','setWifiCredentials?login='+e.value+'&password='+n.value,!0),t.send()}}function checkLetters(e){e.value=e.value.replace(/[^a-z  0-9]/i,'')}</script></html>";
+  sendDataByPart(index);
 }
 
 void setWifiCredentials(){
@@ -191,6 +157,8 @@ void setWifiCredentials(){
 
   writeStringToEEPROM(loginAddress, login);
   writeStringToEEPROM(passwordAddress, password);
+
+  server.send(200, "text/plain", "");
 }
 
 //////////////////////////////////////////////////
@@ -198,6 +166,27 @@ void setWifiCredentials(){
 //                  Other                       //
 //                                              //
 //////////////////////////////////////////////////
+
+void sendDataByPart(String data){
+  int contentSize = data.length();
+  int transferred = 0;
+  int packSize = 500;
+
+  server.setContentLength(contentSize);
+  server.send(200, "text/html", data.substring(transferred, transferred + packSize));
+
+  transferred = transferred + packSize < contentSize
+    ? transferred + packSize
+    : contentSize;
+
+  do{
+    server.sendContent(data.substring(transferred, transferred + packSize));
+
+    transferred = transferred + packSize < contentSize
+      ? transferred + packSize
+      : contentSize;
+  }while(transferred < contentSize);
+}
 
 void writeStringToEEPROM(int address, String data){
   char buf[data.length() + 1];

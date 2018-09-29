@@ -5,8 +5,8 @@ html
             include other/css/signInStyle.min.css
     body
         div
-            input(id="login" type="text" maxlength=20)
-            input(id="password" type="password" maxlength=20)
+            input(id="login" type="text" maxlength=20 minlength=1 onkeyup="checkLetters(login)")
+            input(id="password" type="password" maxlength=20 minlength=1 onkeyup="checkLetters(password)")
             button(id="signIn" onclick="signIn()") Sign In
     script
         include other/js/signIn.min.js
