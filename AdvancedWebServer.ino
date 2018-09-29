@@ -164,6 +164,11 @@ void getEffect(){
   server.send(200, "application/json", response);
 }
 
+void signIn(){
+  int t = digitalRead(3);
+  server.send(200, "application/json", String(t));
+}
+
 
 //////////////////////////////////////////////////
 //                                              //
@@ -282,35 +287,75 @@ void setupEffect(){
   implementEffect();
 }
 
+void fastBlink(){
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  for(int i = 0; i < 8; i++){
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    delay(250);
+  }
+}
+
+void slowBlink(){
+  pinMode(LED_BUILTIN, OUTPUT);
+  
+  for(int i = 0; i < 4; i++){
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    delay(500);
+  }
+}
+
 void setup ( void ) {
   EEPROM.begin(512);
+
+  int setupButton = digitalRead(3);
+
+  if(setupButton == HIGH){
+    fastBlink();
     
+    WiFi.softAPdisconnect(true);
+    WiFi.softAP("ESPap");
+    
+    server.on ( "/", signIn);
+    server.onNotFound (handleNotFound);
+    server.begin();
+  }
+  else{
+    slowBlink();
+    
+    WiFi.begin( ssid, password );
+
+    while ( WiFi.status() != WL_CONNECTED ) {
+      delay ( 500 );
+    }
+
+    server.on ( "/", handleIndex);
+    server.on ( "/setColor", setColor);
+    server.on ( "/getColor", getColor);
+    server.on ( "/setEffect", setEffect);
+    server.on ( "/getEffect", getEffect);
+    server.on ( "/setEffectSpeed", setEffectSpeed);
+    server.on ( "/getEffectSpeed", getEffectSpeed);
+    server.onNotFound (handleNotFound);
+    server.begin();
+
+    // turn off softAP.
+    WiFi.softAPdisconnect(true);
+  }
+
   //GPIO 1 (TX) swap the pin to a GPIO.
   pinMode(1, FUNCTION_3);
+
+  //GPIO 3 (RX) swap the pin to a GPIO.
+  pinMode(3, FUNCTION_3);
 
   pinMode(0, OUTPUT);
   pinMode(1, OUTPUT);
   pinMode(2, OUTPUT);
+  pinMode(3, INPUT);
 
   setupColor();
   setupEffect();
-
-	WiFi.begin ( ssid, password );
-	Serial.println ( "" );
-
-	while ( WiFi.status() != WL_CONNECTED ) {
-		delay ( 500 );
-	}
-
-	server.on ( "/", handleIndex);
-	server.on ( "/setColor", setColor);
-  server.on ( "/getColor", getColor);
-  server.on ( "/setEffect", setEffect);
-  server.on ( "/getEffect", getEffect);
-  server.on ( "/setEffectSpeed", setEffectSpeed);
-  server.on ( "/getEffectSpeed", getEffectSpeed);
-	server.onNotFound (handleNotFound);
-	server.begin();
 }
 
 void loop ( void ) {

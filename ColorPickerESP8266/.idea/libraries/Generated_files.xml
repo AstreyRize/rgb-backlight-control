@@ -3,10 +3,12 @@
     <properties>
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/other/js/app.min.js" />
+        <item url="file://$PROJECT_DIR$/other/js/app.min.min.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/other/js/app.min.js" />
+      <root url="file://$PROJECT_DIR$/other/js/app.min.min.js" />
     </CLASSES>
     <SOURCES />
   </library>
