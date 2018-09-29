@@ -5,14 +5,13 @@
 #include <EEPROM.h>
 #include <Ticker.h>
 
-const char *ssid = "Astrey";
-const char *password = "474643756hammerman";
-
 int redColorAddress = 0;
 int greenColorAddress = 1;
 int blueColorAddress = 2;
 int effectSpeedAddress = 3;
 int effectAddress = 8;
+int loginAddress = 10;
+int passwordAddress = 30;
 
 byte red = 255;
 byte green = 255;
@@ -165,8 +164,55 @@ void getEffect(){
 }
 
 void signIn(){
-  int t = digitalRead(3);
-  server.send(200, "application/json", String(t));
+  String index = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'/><style>body{background-color:darkslategray}input[type=text],[type=password],select{width:100%;padding:12px 20px;margin:8px 0;display:inline-block;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}button{background-color:#4caf50;border:0;color:white;padding:20px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;margin:4px 2px;cursor:pointer;border-radius:12px;width:100%;opacity:1}button:active{opacity:.5}</style></head><body><div><input id='login' type='text' maxlength='20'/><input id='password' type='password' maxlength='20'/><button id='signIn' onclick='signIn()'>Sign In</button></div></body><script>function signIn(){var e=document.getElementById('login'),n=document.getElementById('password');if(e&&n){var t=new XMLHttpRequest;t.open('GET','setWifiCredentials?login='+e.value+'&password='+n.value,!0),t.send()}}</script></html>";
+  int contentSize = index.length();
+  int transferred = 0;
+  int packSize = 500;
+
+  server.setContentLength(contentSize);
+  server.send(200, "text/html", index.substring(transferred, transferred + packSize));
+
+  transferred = transferred + packSize < contentSize
+    ? transferred + packSize
+    : contentSize;
+
+  do{
+    server.sendContent(index.substring(transferred, transferred + packSize));
+
+    transferred = transferred + packSize < contentSize
+      ? transferred + packSize
+      : contentSize;
+  }while(transferred < contentSize);
+}
+
+void setWifiCredentials(){
+  String login = server.arg("login");
+  String password = server.arg("password");
+
+  writeStringToEEPROM(loginAddress, login);
+  writeStringToEEPROM(passwordAddress, password);
+}
+
+//////////////////////////////////////////////////
+//                                              //
+//                  Other                       //
+//                                              //
+//////////////////////////////////////////////////
+
+void writeStringToEEPROM(int address, String data){
+  char buf[data.length() + 1];
+  data.toCharArray(buf, data.length() + 1);
+
+  for(int i = 0; i < data.length() + 1; i++){
+      EEPROM.write(address + i, buf[i]);
+      EEPROM.commit();
+  }
+}
+
+void readStringToEEPROM(int address, char *buf, int bufLength){
+  for(int i = 0; i < bufLength; i++){
+      buf[i] = EEPROM.read(address + i);
+  }
 }
 
 
@@ -317,13 +363,19 @@ void setup ( void ) {
     WiFi.softAP("ESPap");
     
     server.on ( "/", signIn);
+    server.on ( "/setWifiCredentials", setWifiCredentials);
     server.onNotFound (handleNotFound);
     server.begin();
   }
   else{
     slowBlink();
+
+    char login[20];
+    readStringToEEPROM(loginAddress, login, 20);
+    char password[20];
+    readStringToEEPROM(passwordAddress, password, 20);
     
-    WiFi.begin( ssid, password );
+    WiFi.begin( login, password );
 
     while ( WiFi.status() != WL_CONNECTED ) {
       delay ( 500 );

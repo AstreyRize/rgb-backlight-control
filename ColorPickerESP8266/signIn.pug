@@ -1,0 +1,12 @@
+html
+    head
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        style
+            include other/css/signInStyle.min.css
+    body
+        div
+            input(id="login" type="text" maxlength=20)
+            input(id="password" type="password" maxlength=20)
+            button(id="signIn" onclick="signIn()") Sign In
+    script
+        include other/js/signIn.min.js
