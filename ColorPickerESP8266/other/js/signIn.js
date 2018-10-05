@@ -12,5 +12,5 @@ function signIn(){
 }
 
 function  checkLetters(contect){
-    contect.value = contect.value.replace(/[^a-z  0-9]/i, "");
+    contect.value = contect.value.replace(/[^a-z 0-9]/i, "");
 }

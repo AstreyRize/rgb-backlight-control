@@ -89,6 +89,16 @@ function getSpeed(){
 }
 
 function changeEffect(effect){
+
+    switch (effect) {
+        case 1:
+            document.getElementById("speed").max = 300;
+            break;
+        case 2:
+            document.getElementById("speed").max = 100;
+            break;
+    }
+
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/setEffect?effect='+ effect, true);
     xhr.send();
