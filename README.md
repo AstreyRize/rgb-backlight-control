@@ -1,2 +1,3 @@
 # RGBBacklight
-RGB backlight with WIFI control
+RGB backlight with WiFi control
+RGB подсветка с управлением по WiFi
